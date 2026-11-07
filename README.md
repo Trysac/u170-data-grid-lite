@@ -1,55 +1,46 @@
-# data-grid-lite
+# @trysac/data-grid-lite
 
-[![npm version](https://img.shields.io/npm/v/@trysac/data-grid-lite.svg)](https://www.npmjs.com/package/@trysac/data-grid-lite)
-[![license: MIT](https://img.shields.io/npm/l/@trysac/data-grid-lite.svg)](LICENSE)
-[![CI](https://github.com/Trysac/u170-data-grid-lite/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u170-data-grid-lite/actions/workflows/ci.yml)
+Headless data grid core: stable multi-column sort with nulls last, ten typed filter operators, index-preserving views and fixed-height virtual scrolling windows. Every admin panel rebuilds table logic inside a UI framework, leading to testability issues, mutations, and incorrect edge-case handling. This library provides a framework-free, pure-function core for tabular data.
 
-Headless data grid core: stable multi-column sort with nulls last, ten typed filter operators, index-preserving views and fixed-height virtual scrolling windows
+## Installation
 
-## Problem
-
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and why existing
-packages do not solve it well. Keep it factual; link to an issue or decision record when there is one.
-
-## Install
-
-```sh
+```bash
 npm install @trysac/data-grid-lite
 ```
 
-Requires Node.js 20 or newer. The package ships ES modules with TypeScript declarations.
-
-## Usage
+## Usage Example
 
 ```ts
-import { greet } from "@trysac/data-grid-lite";
+import { applyView, virtualWindow } from "@trysac/data-grid-lite";
 
-// Build a greeting; surrounding whitespace is ignored.
-const message = greet("  Ada ");
-console.log(message); // "Hello, Ada!"
-
-try {
-  greet("   ");
-} catch (error) {
-  console.error((error as Error).message); // "name must not be empty"
-}
+const rows = [{ name: "Ada", score: 95 }, { name: "Bob", score: 82 }];
+const cols = [{ id: "score", type: "number" as const, accessor: (r: (typeof rows)[0]) => r.score }];
+const view = applyView(rows, cols, {
+  sort: [{ column: "score", direction: "desc" }],
+  filters: [{ column: "score", op: "gte", value: 85 }],
+});
+const win = virtualWindow({ rowCount: view.rows.length, rowHeight: 24, viewportHeight: 200, scrollTop: 0 });
 ```
 
-## API
+## API Summary
 
-| Export | Signature | Description |
-|---|---|---|
-| `greet` | `(name: string) => string` | Placeholder API; replace it with the real one. |
+### Core Functions
+- `applyView<T>(rows, columns, view)`: Filters and sorts rows, returning `{ rows, indices }`.
+- `sortRows<T>(rows, sort, columns)`: Sorts rows; stable with index tie-breaker.
+- `filterRows<T>(rows, filters, columns)`: Filters rows using AND conjunction.
+- `virtualWindow(input)`: Calculates scroll geometry `start`, `end`, `offsetTop`, `totalHeight`.
 
-## Development
+### Limits
+- Rows: 10,000,000
+- Columns: 10,000
+- Sort specs: 100
+- Filters: 1,000
 
-```sh
-npm install
-npm run check   # lint, format, types, tests with coverage, docs, secrets
-```
+### Errors
+`GridError` throws with codes: `unknown_column`, `invalid_filter`, `invalid_window`, `invalid_sort`.
 
-See [AGENTS.md](AGENTS.md) for the full command list and [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
+## Why not AG Grid or TanStack Table?
+This library is a tiny, dependency-free, fully deterministic core. Unlike general-purpose tables, it enforces strict, predictable null-ordering and boundary rules suitable for high-performance, predictable data processing without the overhead of heavy UI frameworks.
 
-## License
-
-[MIT](LICENSE) © 2026 Miguel Gomez
+## Security
+See [docs/SECURITY.md](docs/SECURITY.md) for the threat model and resource limits.
