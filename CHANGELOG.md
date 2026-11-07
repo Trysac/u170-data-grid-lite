@@ -9,4 +9,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Initial release of @trysac/data-grid-lite: headless core for stable sorting with nulls last, ten typed filter operators, index-preserving views, and virtual scroll calculations.
 - Initial project structure from the factory utility template.

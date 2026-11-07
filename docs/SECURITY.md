@@ -1,28 +1,15 @@
-# Security practices
+# Security Model
 
-How this repository keeps the package and its users safe. The disclosure policy is in
-[../SECURITY.md](../SECURITY.md).
+## Threat Model
+- **Defended**: 
+  - Resource exhaustion: Input sizes are strictly limited via `MAX_ROWS_LIMIT`, `MAX_COLUMNS_LIMIT`, `MAX_SORT_SPECS_LIMIT`, and `MAX_FILTERS_LIMIT`.
+  - Code Injection: Logic relies on pure functions and predefined operators; no dynamic evaluation (eval, Function, regex) is performed on user inputs.
+  - Error Leakage: Error messages are truncated to 200 characters.
+- **Not Defended**:
+  - Logic correctness of user-provided `accessor` functions.
 
-## Secrets
-
-- No secrets, tokens or credentials in the repository, commit history, logs or prompts.
-- `gitleaks` runs as the last step of `npm run check` and as a dedicated CI job. Its configuration is
-  `.gitleaks.toml`.
-- Publishing credentials live only in the CI secret store or the maintainer's local npm configuration.
-
-## Dependencies
-
-- Runtime dependencies are avoided; development dependencies are limited to the toolchain listed in
-  [STACK.md](STACK.md).
-- Dependabot opens weekly updates for npm packages and GitHub Actions.
-- Commit the generated `package-lock.json` so installs are reproducible.
-
-## Code
-
-- No `eval`, dynamic `Function` construction or shelling out from library code.
-- Inputs from callers are validated and rejected with explicit errors.
-
-## Publishing
-
-- Packages are published from a clean checkout after `npm run check` passes.
-- Only `dist/` is included in the published tarball.
+## Resource Limits
+- Rows: 10,000,000
+- Columns: 10,000
+- Sort Specs: 100
+- Filters: 1,000
