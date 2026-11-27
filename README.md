@@ -4,9 +4,15 @@ Headless data grid core: stable multi-column sort with nulls last, ten typed fil
 
 ## Installation
 
-```bash
-npm install @trysac/data-grid-lite
+Not published to npm yet. Build it from a clone, then install it from the local path:
+
+```sh
+git clone https://github.com/Trysac/u170-data-grid-lite.git
+cd u170-data-grid-lite && npm ci && npm run build
+cd ../your-project && npm install ../u170-data-grid-lite
 ```
+
+Imports keep the package name: `import { ... } from "@trysac/data-grid-lite"`.
 
 ## Usage Example
 
